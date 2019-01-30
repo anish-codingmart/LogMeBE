@@ -1,5 +1,6 @@
 const express = require("express");
 const moment = require("moment");
+const path = require("path");
 var fs = require("fs"),
   es = require("event-stream");
 var app = express();
@@ -15,6 +16,7 @@ var router = express.Router();
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
+app.use(express.static(path.join(__dirname, "build")));
 
 app.use(cors());
 // Init Variables
@@ -41,15 +43,8 @@ initialSettingsConfig();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// To Get Settings Config
-app.get("/settings", function(req, res, next) {
-  let obj = {
-    logsThresholdCount: logsThresholdCount,
-    alertEmailAddress: alertEmailAddress,
-    alertEmailAddressArray: alertEmailAddressArray,
-    alertRules: alertRules
-  };
-  res.json(obj);
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.get("/get-alert-rules", function(req, res, next) {
