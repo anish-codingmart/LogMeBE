@@ -1,0 +1,5 @@
+14.141.162.161 - - [12/Dec/2018:09:08:51 +0000] "GET /ar/flight-booking/lion-airlines-jakarta-merauke-flights.html HTTP/1.1" 301 832 "-" "Mozilla/5.0 (compatible; AhrefsBot/5.2; +http://ahrefs.com/robot/)"
+14.141.162.161 - - [12/Dec/2018:09:08:51 +0000] "GET /flight-booking/emirates-karachi-lisbon-flights.html HTTP/1.1" 302 730 "-" "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+14.141.162.161 - - [12/Dec/2018:09:08:53 +0000] "GET /flight-booking/british-airways-bangkok-new-delhi-flights.html HTTP/1.1" 301 831 "-" "Mozilla/5.0 (compatible; AhrefsBot/5.2; +http://ahrefs.com/robot/)"
+14.141.162.161 - - [12/Dec/2018:09:08:51 +0000] "GET /flight-schedule/toronto-saint-john-flights.html HTTP/1.1" 302 743 "-" "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
+14.141.162.161 - - [12/Dec/2018:09:08:54 +0000] "GET /flight-booking/air-france-detroit-lansing-flights.html HTTP/1.1" 301 846 "-" "Mozilla/5.0 (compatible; AhrefsBot/5.2; +http://ahrefs.com/robot/)"
