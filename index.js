@@ -207,23 +207,18 @@ function compareHitsToThreshold(alert, obtainedHits) {
   // console.log("Operator", alert.alertOperator);
   if (alert.alertOperator == ">") {
     if (obtainedHits > alert.alertThresholdLimit) {
-      // alertClient();
-      alertSMS(alert.alertMobileNumberArray);
       alertMail(alert.alertEmailAddressArray);
+      if (alert.alertMobileNumberFlag) alertSMS(alert.alertMobileNumberArray);
     }
   } else if (alert.alertOperator == "<") {
     if (obtainedHits < alert.alertThresholdLimit) {
-      // alertClient();
-      alertMail();
-      alertSMS(alert.alertMobileNumberArray);
       alertMail(alert.alertEmailAddressArray);
+      if (alert.alertMobileNumberFlag) alertSMS(alert.alertMobileNumberArray);
     }
   } else if (alert.alertOperator == "==") {
     if (obtainedHits == alert.alertThresholdLimit) {
-      // alertClient();
-      alertMail();
-      alertSMS(alert.alertMobileNumberArray);
       alertMail(alert.alertEmailAddressArray);
+      if (alert.alertMobileNumberFlag) alertSMS(alert.alertMobileNumberArray);
     }
   }
 }
