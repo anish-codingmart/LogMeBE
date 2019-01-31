@@ -94,11 +94,6 @@ function unSubscribeTimeInterval(uid) {
   clearInterval(intervalObject[uid]);
 }
 
-// Socket IO
-io.on("connection", socket => {
-  socket.on("disconnect", () => console.log("Client disconnected"));
-});
-
 // Init Elastic Search
 var client = new elasticsearch.Client({
   host: "localhost:9200",
@@ -158,23 +153,45 @@ function runAlert(alert) {
 function fetchQuery(alert) {
   // Query
   const apiURL = "http://localhost:9200/logsindexnew/_search";
-  const query = {
-    query: {
-      bool: {
-        must: [{ match: { [alert.alertFieldType]: alert.alertFieldName } }],
-        filter: [
-          {
-            range: {
-              timestamp: {
-                gte: alert.alertGTE,
-                lte: alert.alertLTE
+  let query;
+  if (alert.alertFieldType == "allLogs") {
+    query = {
+      query: {
+        bool: {
+          filter: [
+            {
+              range: {
+                timestamp: {
+                  gte: alert.alertGTE,
+                  lte: alert.alertLTE
+                }
               }
             }
-          }
-        ]
+          ]
+        }
       }
-    }
-  };
+    };
+  } // If All Logs
+  else {
+    query = {
+      query: {
+        bool: {
+          must: [{ match: { [alert.alertFieldType]: alert.alertFieldName } }],
+          filter: [
+            {
+              range: {
+                timestamp: {
+                  gte: alert.alertGTE,
+                  lte: alert.alertLTE
+                }
+              }
+            }
+          ]
+        }
+      }
+    };
+  } // For Other Fields
+
   // console.log(query);
 
   console.log("Calling", alert.alertName);
@@ -245,101 +262,6 @@ watchFile();
 //     console.log("Logs Counter Zero Log C", logsCountPerSecond);
 //   }, 1000);
 // }
-
-// function alertClient() {
-//   let jsonObj = {
-//     message: "Over Threshold Limit"
-//   };
-//   io.emit("alertThresholdLimit", jsonObj);
-// }
-
-// Send SMS (Alert)
-
-function alertSMS(mobileNumberArray) {
-  var http = require("http");
-  var urlencode = require("urlencode");
-  console.log("Sending SMS", mobileNumberArray);
-  if (mobileNumberArray)
-    mobileNumberArray.map(doc => {
-      console.log("Sending Message");
-      var msg = urlencode("HEYYY! ERROOOR! HELP ME XD");
-      var toNumber = doc.mobile; //number
-      var username = "saghana@codingmart.com"; //user-email id
-      var hash =
-        "dd2ab429a40630a24df31c52f61ddc181662ba022493465fcb06546e7dc28130"; //hash key
-      var sender = "txtlcl";
-      var data =
-        "username=" +
-        username +
-        "&hash=" +
-        hash +
-        "&sender=" +
-        sender +
-        "&numbers=" +
-        toNumber +
-        "&message=" +
-        msg;
-      var options = {
-        host: "api.textlocal.in",
-        path: "/send?" + data
-      };
-
-      callback = function(response) {
-        var str = "";
-        response.on("data", function(chunk) {
-          str += chunk;
-        });
-        response.on("end", function() {
-          console.log(str);
-        });
-      };
-      http.request(options, callback).end();
-    });
-}
-
-// Send Email (Alert)
-function alertMail(alertEmailAddressArray) {
-  console.log("Email is Sending");
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "testemailcodingmart@gmail.com",
-      pass: "testemail123!"
-    }
-  });
-
-  alertEmailAddressArray.map(emailTo => {
-    var mailOptions = {
-      from: "testemailcodingmart@gmail.com",
-      to: emailTo.email,
-      subject: "Alert! Logs are Exceeding!",
-      text: "Alert! Logs are Exceeding. Let's scale up!"
-    };
-
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-  });
-}
-
-// Watch File for Changes
-function watchFile() {
-  let fsWait = false;
-  fs.watch(logFileLocation, (event, filename) => {
-    if (filename) {
-      if (fsWait) return;
-      fsWait = setTimeout(() => {
-        fsWait = false;
-      }, 100);
-      console.log(`${filename} file Changed`);
-      streamData();
-    }
-  });
-}
 
 // Stream Logs
 function streamData() {
@@ -562,6 +484,94 @@ function checkSpiderBot(agent) {
   }
 
   return spiderBot;
+}
+
+// Send SMS (Alert)
+
+function alertSMS(mobileNumberArray) {
+  var http = require("http");
+  var urlencode = require("urlencode");
+  console.log("Sending SMS", mobileNumberArray);
+  if (mobileNumberArray)
+    mobileNumberArray.map(doc => {
+      console.log("Sending Message");
+      var msg = urlencode("HEYYY! ERROOOR! HELP ME XD");
+      var toNumber = doc.mobile; //number
+      var username = "saghana@codingmart.com"; //user-email id
+      var hash =
+        "dd2ab429a40630a24df31c52f61ddc181662ba022493465fcb06546e7dc28130"; //hash key
+      var sender = "txtlcl";
+      var data =
+        "username=" +
+        username +
+        "&hash=" +
+        hash +
+        "&sender=" +
+        sender +
+        "&numbers=" +
+        toNumber +
+        "&message=" +
+        msg;
+      var options = {
+        host: "api.textlocal.in",
+        path: "/send?" + data
+      };
+
+      callback = function(response) {
+        var str = "";
+        response.on("data", function(chunk) {
+          str += chunk;
+        });
+        response.on("end", function() {
+          console.log(str);
+        });
+      };
+      http.request(options, callback).end();
+    });
+}
+
+// Send Email (Alert)
+function alertMail(alertEmailAddressArray) {
+  console.log("Email is Sending");
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "testemailcodingmart@gmail.com",
+      pass: "testemail123!"
+    }
+  });
+
+  alertEmailAddressArray.map(emailTo => {
+    var mailOptions = {
+      from: "testemailcodingmart@gmail.com",
+      to: emailTo.email,
+      subject: "Alert! Logs are Exceeding!",
+      text: "Alert! Logs are Exceeding. Let's scale up!"
+    };
+
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  });
+}
+
+// Watch File for Changes
+function watchFile() {
+  let fsWait = false;
+  fs.watch(logFileLocation, (event, filename) => {
+    if (filename) {
+      if (fsWait) return;
+      fsWait = setTimeout(() => {
+        fsWait = false;
+      }, 100);
+      console.log(`${filename} file Changed`);
+      streamData();
+    }
+  });
 }
 
 async function addToIndex(data) {
